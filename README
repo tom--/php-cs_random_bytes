@@ -1,0 +1,8 @@
+This project's goal is to add a platform and extension-independent API to the system's
+CSPRNG to PHP's base system.
+
+The corresponding RFC is https://wiki.php.net/rfc/csrandombytes
+
+Discussion is on the PHP internals mailing list:
+  - http://php.net/mailing-lists.php
+  - http://marc.info/?l=php-internals
