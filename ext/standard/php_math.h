@@ -13,7 +13,7 @@
    | license@php.net so we can mail you a copy immediately.               |
    +----------------------------------------------------------------------+
    | Authors: Jim Winstead <jimw@php.net>                                 |
-   |          Stig Sæther Bakken <ssb@php.net>                            |
+   |          Stig Sï¿½ther Bakken <ssb@php.net>                            |
    +----------------------------------------------------------------------+
 */
 
@@ -50,6 +50,7 @@ PHP_FUNCTION(getrandmax);
 PHP_FUNCTION(mt_srand);
 PHP_FUNCTION(mt_rand);
 PHP_FUNCTION(mt_getrandmax);
+PHP_FUNCTION(cs_random_bytes);
 PHP_FUNCTION(abs);
 PHP_FUNCTION(ceil);
 PHP_FUNCTION(floor);

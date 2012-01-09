@@ -1922,6 +1922,11 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO(arginfo_mt_getrandmax, 0)
 ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_cs_random_bytes, 0, 0, 1)
+	ZEND_ARG_INFO(0, size)
+	ZEND_ARG_INFO(0, is_strong_result)
+ZEND_END_ARG_INFO()
 /* }}} */
 /* {{{ sha1.c */
 ZEND_BEGIN_ARG_INFO_EX(arginfo_sha1, 0, 0, 1)
@@ -2839,6 +2844,7 @@ const zend_function_entry basic_functions[] = { /* {{{ */
 	PHP_FE(mt_rand,															arginfo_mt_rand)
 	PHP_FE(mt_srand,														arginfo_mt_srand)
 	PHP_FE(mt_getrandmax,													arginfo_mt_getrandmax)
+	PHP_FE(cs_random_bytes,													arginfo_cs_random_bytes)
 
 #if HAVE_GETSERVBYNAME
 	PHP_FE(getservbyname,													arginfo_getservbyname)

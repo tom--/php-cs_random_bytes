@@ -57,4 +57,8 @@ PHPAPI long php_rand(TSRMLS_D);
 PHPAPI void php_mt_srand(php_uint32 seed TSRMLS_DC);
 PHPAPI php_uint32 php_mt_rand(TSRMLS_D);
 
+/* cs_random_bytes function: API to system CSPRNG */
+/* Limit number of bytes user may request */
+#define MAX_CS_BYTES 1024
+
 #endif	/* PHP_RAND_H */

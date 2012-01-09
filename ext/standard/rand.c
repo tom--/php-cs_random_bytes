@@ -26,6 +26,7 @@
 /* $Id: rand.c 306939 2011-01-01 02:19:59Z felipe $ */
 
 #include <stdlib.h>
+#include <fcntl.h>
 
 #include "php.h"
 #include "php_math.h"
@@ -370,6 +371,90 @@ PHP_FUNCTION(mt_getrandmax)
 	 * compatibility with the previous php_rand
 	 */
   	RETURN_LONG(PHP_MT_RAND_MAX); /* 2^^31 */
+}
+/* }}} */
+
+/* {{{ proto string cs_random_bytes(integer length [, &bool returned_strong_result])
+   Returns a string of the length specified filled with random bytes */
+PHP_FUNCTION(cs_random_bytes)
+{
+	char *str;
+	long size;
+	int is_strong_result = 1;
+	int n = 0;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l|l", &size, &is_strong_result) == FAILURE) {
+		return;
+	}
+
+	if (size <= 0) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING,	"Length argument must be positive");
+		RETURN_FALSE;
+	}
+
+	if (size >= MAX_CS_BYTES) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING,	"Length argument exceeds limit %d", MAX_CS_BYTES);
+		RETURN_FALSE;
+	}
+
+	str = ecalloc(size + 1, 1);
+
+#if PHP_WIN32
+	/* on Windows use php_win32_get_random_bytes to access CryptGenRandom*/
+	BYTE *str_b = (BYTE *) str;
+	if (php_win32_get_random_bytes(str_b, (size_t) size) == FAILURE){
+		efree(str);
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Could not gather sufficient random data");
+		RETURN_FALSE;
+	}
+	n = size;
+#else
+	int    fd;
+	size_t read_bytes = 0;
+
+	/* try reading from /dev/random */
+	fd = open("/dev/random", O_RDONLY | O_NONBLOCK);
+	if (fd < 0) {
+		efree(str);
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Cannot open random device");
+		RETURN_FALSE;
+	}
+	while (read_bytes < size) {
+		n = read(fd, str + read_bytes, size - read_bytes);
+		if (n < 0) {
+			break;
+		}
+		read_bytes += n;
+	}
+	close(fd);
+
+	/* if not enough bytes, try reading from /dev/urandom on Linux this is enough to
+	   */
+	if (read_bytes < size) {
+		fd = open("/dev/urandom", O_RDONLY);
+		if (fd >= 0) {
+			while (read_bytes < size) {
+				n = read(fd, str + read_bytes, size - read_bytes);
+				if (n < 0) {
+					break;
+				}
+				read_bytes += n;
+				/* since we got something, result is not strong CS random */
+				is_strong_result = 0;
+			}
+			close(fd);
+		}
+	}
+
+	n = read_bytes;
+	close(fd);
+	if (n < size) {
+		efree(str);
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Could not gather sufficient random data");
+		RETURN_FALSE;
+	}
+#endif
+	RETURN_STRINGL(str, n, 0);
 }
 /* }}} */
 
