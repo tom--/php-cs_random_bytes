@@ -1,5 +1,5 @@
-This project's goal is to add a platform and extension-independent API to the system's
-CSPRNG to PHP's base system.
+This project's goal is to add a platform and extension-independent API to the 
+system's CSPRNG to PHP's base system.
 
 The corresponding RFC is https://wiki.php.net/rfc/csrandombytes
 
